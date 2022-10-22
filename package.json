@@ -1,0 +1,48 @@
+{
+  "name": "@iopa/node-vite-sample",
+  "version": "0.5.0",
+  "description": "Node Edge Server with HMR",
+  "main": "./dist/server.js",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@iopa/edge-nodejs": "^4.0",
+    "@iopa/logger": "^4.0",
+    "@iopa/schema-router": "^4.0",
+    "@iopa/types": "^4.0",
+    "iopa": "^4.0.55"
+  },
+  "devDependencies": {
+    "@sync-labs/eslint-config": "^2.5.0",
+    "eslint": "^8.26.0",
+    "rollup": "*",
+    "vite": "^3.1.8",
+    "vite-node": "^0.24.3",
+    "pathe": "^0.3.2",
+    "rollup-plugin-esbuild": "^4.9.1",
+    "rollup-plugin-dts": "^4.2.2",
+    "@rollup/plugin-alias": "3.1.9",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-replace": "^4.0.0",
+    "@types/node": "^18",
+    "envkey-cmd": "^10.1.6",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4"
+  },
+  "scripts": {
+    "tunnel": "cloudflared tunnel --config ~/.cloudflared/config.yaml run",
+    "build-prod": "envkey-cmd rollup -c",
+    "depcheck": "npx depcheck --ignores=vscode,esbuild,estree --ignore-patterns=dist",
+    "dev": "envkey-cmd node --trace-warnings --enable-source-maps vite-dev.mjs",
+    "deploy-cloudrun": "npm run build-prod && gcloud run deploy sluice-engine --max-instances=1 --port=8080 --service-account=sa-sluice-cloudrun@sluice-abe21.iam.gserviceaccount.com --source=. --allow-unauthenticated --region=us-central1",
+    "start-from-cloudrun": "node dist/server.js",
+    "staging": "npm run build-prod && envkey-cmd node dist/server.js",
+    "test": "npm run build-prod && node node_modules/jest/bin/jest.js",
+    "types:check": "tsc && tsc -p test/tsconfig.json"
+  },
+  "author": "Internet Open Protocols Alliance (IOPA)",
+  "license": "MIT"
+}
